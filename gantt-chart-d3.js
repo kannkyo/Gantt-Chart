@@ -71,6 +71,12 @@ d3.gantt = function() {
     initTimeDomain(tasks);
     initAxis();
 
+    var div = d3
+      .select(selector)
+      .append('div')
+      .attr('class', 'd3tooltip')
+      .style('opacity', 0);
+
     var svg = d3.select(selector)
       .append("svg")
       .attr("class", "chart")
@@ -98,7 +104,24 @@ d3.gantt = function() {
       })
       .attr("width", function(d) {
         return Math.max(1, (x(d.endDate) - x(d.startDate)));
-      });
+      })
+      .style('cursor', 'pointer')
+      .on('mouseover', d => {
+        div
+          .transition()
+          .duration(200)
+          .style('opacity', 0.9);
+        div
+          .html('start date:' + d.startDate + '<br/>end date:' + d.endDate)
+          .style('left', d3.event.pageX + 'px')
+          .style('top', d3.event.pageY + 'px');
+      })
+      .on('mouseout', () => {
+        div
+          .transition()
+          .duration(500)
+          .style('opacity', 0);
+      });;
 
     var gx = svg.append("g")
       .attr("class", "x axis")

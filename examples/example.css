@@ -34,3 +34,14 @@ html, body, #wrapper {
 .bar-killed {
   fill: #ffbb33;
 }
+
+.d3tooltip {
+  color: white;
+  position: absolute;
+  text-align: center;
+  padding: 2px;
+  font: 12px sans-serif;
+  background: rgba(0,0,0,.8);
+  border: 2px solid black;
+  pointer-events: none;
+}
