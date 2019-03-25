@@ -22,5 +22,8 @@
   "bugs": {
     "url": "https://github.com/kannkyo/Gantt-Chart/issues"
   },
-  "homepage": "https://github.com/kannkyo/Gantt-Chart#readme"
+  "homepage": "https://github.com/kannkyo/Gantt-Chart#readme",
+  "dependencies": {
+    "d3": "^5.9.2"
+  }
 }
