@@ -47,8 +47,8 @@ function example() {
     var taskName = taskNames[Math.floor(Math.random() * taskNames.length)];
 
     tasks.push({
-      "startDate": d3.time.hour.offset(lastEndDate, Math.ceil(1 * Math.random())),
-      "endDate": d3.time.hour.offset(lastEndDate, (Math.ceil(Math.random() * 3)) + 1),
+      "startDate": d3.timeHour.offset(lastEndDate, Math.ceil(1 * Math.random())),
+      "endDate": d3.timeHour.offset(lastEndDate, (Math.ceil(Math.random() * 3)) + 1),
       "taskName": taskName,
       "status": taskStatusName
     });
