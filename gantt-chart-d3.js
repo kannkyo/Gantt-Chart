@@ -21,6 +21,8 @@ d3.gantt = function() {
   var taskStatus = [];
   var height = document.body.clientHeight - margin.top - margin.bottom - 5;
   var width = document.body.clientWidth - margin.right - margin.left - 5;
+  var align = 0.5;
+  var padding = 0.9;
 
   var tickFormat = "%H:%M";
 
@@ -33,7 +35,7 @@ d3.gantt = function() {
   };
 
   var x = d3.scaleTime().domain([timeDomainStart, timeDomainEnd]).range([0, width]).clamp(true);
-  var y = d3.scaleBand().domain(taskTypes).rangeRound([0, height - margin.top - margin.bottom], .1);
+  var y = d3.scaleBand().domain(taskTypes).rangeRound([0, height - margin.top - margin.bottom], .1).align(align).paddingInner(padding).paddingOuter(padding);
 
   var xAxis = d3.axisBottom(x).tickFormat(d3.timeFormat(tickFormat)).tickSize(8).tickPadding(8);
   var yAxis = d3.axisLeft(y).tickSize(0);
@@ -58,7 +60,7 @@ d3.gantt = function() {
 
   var initAxis = function() {
     x = d3.scaleTime().domain([timeDomainStart, timeDomainEnd]).range([0, width]).clamp(true);
-    y = d3.scaleBand().domain(taskTypes).rangeRound([0, height - margin.top - margin.bottom], .1);
+    y = d3.scaleBand().domain(taskTypes).rangeRound([0, height - margin.top - margin.bottom], .1).align(align).paddingInner(padding).paddingOuter(padding);
 
     xAxis = d3.axisBottom(x).tickFormat(d3.timeFormat(tickFormat)).tickSize(8).tickPadding(8);
     yAxis = d3.axisLeft(y).tickSize(0);
@@ -80,11 +82,9 @@ d3.gantt = function() {
       .attr("height", height + margin.top + margin.bottom)
       .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
 
-    svg.selectAll(".chart")
+    var bar = svg.selectAll(".chart")
       .data(tasks, keyFunction).enter()
       .append("rect")
-      .attr("rx", 5)
-      .attr("ry", 5)
       .attr("class", function(d) {
         if (taskStatus[d.status] == null) {
           return "bar";
@@ -100,13 +100,39 @@ d3.gantt = function() {
         return Math.max(1, (x(d.endDate) - x(d.startDate)));
       });
 
-    svg.append("g")
+    var gx = svg.append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0, " + (height - margin.top - margin.bottom) + ")")
       .transition()
       .call(xAxis);
 
     svg.append("g").attr("class", "y axis").transition().call(yAxis);
+
+    var zoom = d3.zoom()
+      .scaleExtent([1, Infinity])
+      .translateExtent([
+        [0, 0],
+        [width, 0]
+      ])
+      .extent([
+        [0, 0],
+        [width, height]
+      ])
+      .on("zoom", function() {
+        const transform = d3.event.transform;
+        gx.call(xAxis.scale(transform.rescaleX(x)));
+
+        bar.attr("width", function(d) {
+            var left = transform.applyX(x(d.startDate));
+            var right = transform.applyX(x(d.endDate));
+            return Math.max(1, right - Math.max(0, left));
+          })
+          .attr("transform", function(d) {
+            return "translate(" + Math.max(0, transform.applyX(x(d.startDate))) + "," + y(d.taskName) + ")";
+          });
+      });
+
+    d3.select("svg").call(zoom);
 
     return gantt;
 
@@ -124,8 +150,6 @@ d3.gantt = function() {
 
     rect.enter()
       .insert("rect", ":first-child")
-      .attr("rx", 5)
-      .attr("ry", 5)
       .attr("class", function(d) {
         if (taskStatus[d.status] == null) {
           return "bar";
@@ -194,6 +218,18 @@ d3.gantt = function() {
   gantt.width = function(value) {
     if (!arguments.length) return width;
     width = +value;
+    return gantt;
+  };
+
+  gantt.align = function(value) {
+    if (!arguments.length) return align;
+    align = +value;
+    return gantt;
+  };
+
+  gantt.padding = function(value) {
+    if (!arguments.length) return padding;
+    padding = +value;
     return gantt;
   };
 
