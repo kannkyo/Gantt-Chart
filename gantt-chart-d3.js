@@ -81,7 +81,7 @@ d3.gantt = function() {
       .attr("height", height + margin.top + margin.bottom)
       .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
 
-    svg.selectAll(".chart")
+    var bar = svg.selectAll(".chart")
       .data(tasks, keyFunction).enter()
       .append("rect")
       .attr("class", function(d) {
@@ -99,13 +99,39 @@ d3.gantt = function() {
         return Math.max(1, (x(d.endDate) - x(d.startDate)));
       });
 
-    svg.append("g")
+    var gx = svg.append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0, " + (height - margin.top - margin.bottom) + ")")
       .transition()
       .call(xAxis);
 
     svg.append("g").attr("class", "y axis").transition().call(yAxis);
+
+    var zoom = d3.zoom()
+      .scaleExtent([1, Infinity])
+      .translateExtent([
+        [0, 0],
+        [width, 0]
+      ])
+      .extent([
+        [0, 0],
+        [width, height]
+      ])
+      .on("zoom", function() {
+        const transform = d3.event.transform;
+        gx.call(xAxis.scale(transform.rescaleX(x)));
+
+        bar.attr("width", function(d) {
+            var left = transform.applyX(x(d.startDate));
+            var right = transform.applyX(x(d.endDate));
+            return Math.max(1, right - Math.max(0, left));
+          })
+          .attr("transform", function(d) {
+            return "translate(" + Math.max(0, transform.applyX(x(d.startDate))) + "," + y(d.taskName) + ")";
+          });
+      });
+
+    d3.select("svg").call(zoom);
 
     return gantt;
 
