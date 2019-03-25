@@ -21,7 +21,6 @@ d3.gantt = function() {
   var taskStatus = [];
   var height = document.body.clientHeight - margin.top - margin.bottom - 5;
   var width = document.body.clientWidth - margin.right - margin.left - 5;
-  var barHeight = 10;
 
   var tickFormat = "%H:%M";
 
@@ -93,7 +92,7 @@ d3.gantt = function() {
       .attr("y", 0)
       .attr("transform", rectTransform)
       .attr("height", function(d) {
-        return Math.min(barHeight, y.bandwidth());
+        return y.bandwidth();
       })
       .attr("width", function(d) {
         return Math.max(1, (x(d.endDate) - x(d.startDate)));
@@ -159,7 +158,7 @@ d3.gantt = function() {
       .attr("y", 0)
       .attr("transform", rectTransform)
       .attr("height", function(d) {
-        return Math.min(barHeight, y.bandwidth());
+        return y.bandwidth();
       })
       .attr("width", function(d) {
         return Math.max(1, (x(d.endDate) - x(d.startDate)));
@@ -168,7 +167,7 @@ d3.gantt = function() {
     rect.transition()
       .attr("transform", rectTransform)
       .attr("height", function(d) {
-        return Math.min(barHeight, y.bandwidth());
+        return y.bandwidth();
       })
       .attr("width", function(d) {
         return Math.max(1, (x(d.endDate) - x(d.startDate)));
@@ -211,12 +210,6 @@ d3.gantt = function() {
   gantt.taskStatus = function(value) {
     if (!arguments.length) return taskStatus;
     taskStatus = value;
-    return gantt;
-  };
-
-  gantt.barHeight = function(value) {
-    if (!arguments.length) return barHeight;
-    barHeight = +value;
     return gantt;
   };
 
