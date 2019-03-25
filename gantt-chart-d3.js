@@ -21,6 +21,8 @@ d3.gantt = function() {
   var taskStatus = [];
   var height = document.body.clientHeight - margin.top - margin.bottom - 5;
   var width = document.body.clientWidth - margin.right - margin.left - 5;
+  var align = 0.5;
+  var padding = 0.9;
 
   var tickFormat = "%H:%M";
 
@@ -33,7 +35,7 @@ d3.gantt = function() {
   };
 
   var x = d3.scaleTime().domain([timeDomainStart, timeDomainEnd]).range([0, width]).clamp(true);
-  var y = d3.scaleBand().domain(taskTypes).rangeRound([0, height - margin.top - margin.bottom], .1);
+  var y = d3.scaleBand().domain(taskTypes).rangeRound([0, height - margin.top - margin.bottom], .1).align(align).paddingInner(padding).paddingOuter(padding);
 
   var xAxis = d3.axisBottom(x).tickFormat(d3.timeFormat(tickFormat)).tickSize(8).tickPadding(8);
   var yAxis = d3.axisLeft(y).tickSize(0);
@@ -58,7 +60,7 @@ d3.gantt = function() {
 
   var initAxis = function() {
     x = d3.scaleTime().domain([timeDomainStart, timeDomainEnd]).range([0, width]).clamp(true);
-    y = d3.scaleBand().domain(taskTypes).rangeRound([0, height - margin.top - margin.bottom], .1);
+    y = d3.scaleBand().domain(taskTypes).rangeRound([0, height - margin.top - margin.bottom], .1).align(align).paddingInner(padding).paddingOuter(padding);
 
     xAxis = d3.axisBottom(x).tickFormat(d3.timeFormat(tickFormat)).tickSize(8).tickPadding(8);
     yAxis = d3.axisLeft(y).tickSize(0);
@@ -216,6 +218,18 @@ d3.gantt = function() {
   gantt.width = function(value) {
     if (!arguments.length) return width;
     width = +value;
+    return gantt;
+  };
+
+  gantt.align = function(value) {
+    if (!arguments.length) return align;
+    align = +value;
+    return gantt;
+  };
+
+  gantt.padding = function(value) {
+    if (!arguments.length) return padding;
+    padding = +value;
     return gantt;
   };
 
